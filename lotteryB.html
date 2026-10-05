@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh‑CN">
+<head>
+<meta charset="UTF‑8">
+<title>生日抽奖B</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+    background:#2b002b;
+    min-height:100vh;
+    font-family:"Microsoft YaHei",sans‑serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    color:#ffadd2;
+    padding:20px;
+}
+h1{
+    font-size:36px;
+    margin-bottom:20px;
+}
+#showPrize{
+    width:420px;
+    height:140px;
+    background:#fff0f6;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:32px;
+    color:#c2185b;
+    font-weight:bold;
+    margin-bottom:20px;
+    padding:10px;
+    text-align:center;
+}
+#btnDraw{
+    padding:14px 42px;
+    font-size:22px;
+    border:none;
+    border-radius:12px;
+    background:#ff4081;
+    color:white;
+    cursor:pointer;
+    margin-bottom:30px;
+}
+#btnDraw:disabled{
+    background:#884460;
+    cursor:not‑allowed;
+}
+.setting-panel{
+    background:rgba(255,255,255,0.1);
+    padding:20px;
+    border-radius:14px;
+    width:480px;
+}
+.setting-panel h3{
+    margin-bottom:12px;
+}
+#txtPrizes{
+    width:100%;
+    height:140px;
+    font-size:16px;
+    padding:8px;
+    border-radius:8px;
+    border:0;
+    color:#222;
+}
+#applyBtn{
+    margin-top:12px;
+    padding:8px 20px;
+    font-size:16px;
+    border-radius:8px;
+    border:none;
+    background:#ff4081;
+    color:#fff;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
+<h1>🎁生日抽奖游戏‑B</h1>
+<div id="showPrize">点击下方按钮抽奖</div>
+<button id="btnDraw">开始抽奖</button>
+
+<div class="setting-panel">
+    <h3>⚙️设置奖品（一行一个）</h3>
+    <textarea id="txtPrizes"></textarea>
+    <button id="applyBtn">应用奖品设置</button>
+</div>
+
+<script>
+let prizeList = [
+    "吃一块蛋糕",
+    "喝一杯果汁",
+    "休息10分钟",
+    "表演小节目",
+    "获得小礼品",
+    "再来一次机会",
+    "帮家里做家务",
+    "免做一件家务"
+];
+
+const showPrize = document.getElementById("showPrize");
+const btnDraw = document.getElementById("btnDraw");
+const txtPrizes = document.getElementById("txtPrizes");
+const applyBtn = document.getElementById("applyBtn");
+
+//把数组写到文本框
+function syncTextarea(){
+    txtPrizes.value = prizeList.join("\n");
+}
+syncTextarea();
+
+let timer = null;
+let isRunning = false;
+
+btnDraw.onclick = function(){
+    if(isRunning) return;
+    if(prizeList.length===0){
+        showPrize.innerText = "请先填写奖品！";
+        return;
+    }
+    isRunning = true;
+    btnDraw.disabled = true;
+
+    let count = 0;
+    timer = setInterval(function(){
+        let rnd = Math.floor(Math.random() * prizeList.length);
+        showPrize.innerText = prizeList[rnd];
+        count++;
+        if(count >= 25){
+            clearInterval(timer);
+            let finalIdx = Math.floor(Math.random() * prizeList.length);
+            showPrize.innerText = "🎉中奖：" + prizeList[finalIdx];
+            isRunning = false;
+            btnDraw.disabled = false;
+        }
+    },80);
+}
+
+//应用设置：文本框按行读取奖品
+applyBtn.onclick = function(){
+    let lines = txtPrizes.value.split("\n");
+    let arr = [];
+    for(let s of lines){
+        let t = s.trim();
+        if(t) arr.push(t);
+    }
+    prizeList = arr;
+    showPrize.innerText = "奖品已更新，可以抽奖";
+}
+</script>
+</body>
+</html>

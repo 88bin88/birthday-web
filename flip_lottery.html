@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>生日翻卡抽奖A</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+    background:#220022;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:40px 20px;
+    font-family:"Microsoft YaHei",sans-serif;
+}
+h1{
+    color:#ff88bb;
+    margin-bottom:40px;
+}
+.wrap{
+    display:grid;
+    grid-template-columns: repeat(3,160px);
+    gap:24px;
+}
+.card{
+    width:160px;
+    height:200px;
+    perspective:800px;
+    cursor:pointer;
+}
+.card-inner{
+    width:100%;
+    height:100%;
+    position:relative;
+    transition: transform 0.7s;
+    transform-style:preserve-3d;
+}
+.card.flipped .card-inner{
+    transform:rotateY(180deg);
+}
+.front,.back{
+    position:absolute;
+    width:100%;
+    height:100%;
+    backface-visibility:hidden;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+    font-weight:bold;
+}
+.front{
+    background:#ff4477;
+    color:#fff;
+}
+.back{
+    background:#ffffff;
+    color:#c82255;
+    transform:rotateY(180deg);
+    padding:10px;
+    text-align:center;
+    font-size:18px;
+}
+#resetBtn{
+    margin-top:20px;
+    padding:12px 32px;
+    font-size:18px;
+    border:none;
+    border-radius:10px;
+    background:#ff4477;
+    color:white;
+    cursor:pointer;
+}
+.setting-panel{
+    margin-top:36px;
+    background:rgba(255,255,255,0.1);
+    padding:20px;
+    border-radius:14px;
+    width:520px;
+}
+.setting-panel h3{
+    color:#ffadd2;
+    margin-bottom:12px;
+}
+#txtPrizes{
+    width:100%;
+    height:130px;
+    font-size:16px;
+    padding:8px;
+    border-radius:8px;
+    border:0;
+    color:#222;
+}
+#applyBtn{
+    margin-top:12px;
+    padding:8px 22px;
+    font-size:16px;
+    border:none;
+    border-radius:8px;
+    background:#ff4477;
+    color:#fff;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
+<h1>🎁饭后翻卡抽奖‑A</h1>
+<div class="wrap" id="box"></div>
+<button id="resetBtn">重置全部卡片</button>
+
+<div class="setting-panel">
+    <h3>⚙️设置奖品（一行一个）</h3>
+    <textarea id="txtPrizes"></textarea>
+    <button id="applyBtn">应用奖品</button>
+</div>
+
+<script>
+let prizes = [
+    "吃一块蛋糕",
+    "喝一杯饮料",
+    "休息十分钟",
+    "表演小节目",
+    "获得小礼物",
+    "再来一次"
+];
+
+const box = document.getElementById("box");
+const resetBtn = document.getElementById("resetBtn");
+const txtPrizes = document.getElementById("txtPrizes");
+const applyBtn = document.getElementById("applyBtn");
+
+//同步奖品到文本框
+function syncTextarea(){
+    txtPrizes.value = prizes.join("\n");
+}
+
+//数组洗牌
+function shuffle(arr){
+    let tmp = [...arr];
+    for(let i=tmp.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [tmp[i],tmp[j]] = [tmp[j],tmp[i]];
+    }
+    return tmp;
+}
+
+//渲染卡片
+function render(){
+    box.innerHTML = "";
+    let list = shuffle(prizes);
+    list.forEach(function(item){
+        let div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+<div class="card-inner">
+  <div class="front">❓</div>
+  <div class="back">${item}</div>
+</div>`;
+        div.onclick = function(){
+            div.classList.add("flipped");
+        }
+        box.appendChild(div);
+    })
+}
+
+//重置按钮
+resetBtn.onclick = function(){
+    render();
+};
+
+//应用设置按钮
+applyBtn.onclick = function(){
+    let lines = txtPrizes.value.split("\n");
+    let arr = [];
+    for(let s of lines){
+        let t = s.trim();
+        if(t){
+            arr.push(t);
+        }
+    }
+    if(arr.length === 0){
+        alert("请填写至少1个奖品！");
+        return;
+    }
+    prizes = arr;
+    render();
+};
+
+syncTextarea();
+render();
+</script>
+</body>
+</html>
